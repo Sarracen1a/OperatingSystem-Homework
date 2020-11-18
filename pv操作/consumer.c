@@ -5,6 +5,7 @@
 #include <sys/sem.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h>
 #define SHMKEY 9075 /*共享存储区的键*/
 #define SEMKEY_PRODUCER 9085 
 #define SEMKEY_CONSUMER 9086 
