@@ -12,10 +12,10 @@ V(盘子)
 #include <errno.h>
 #include <string.h>
 #define SHMKEY 9075 /*共享存储区的键*/
-#define SEMKEY_PRODUCER 9085 
-#define SEMKEY_CONSUMER 9086 
+#define SEMKEY_APPLE 9085 
+#define SEMKEY_ORANGE 9086 
 #define SEMKEY_MUTEX 9087 /*信号量数组的键*//*注意:上面的键在系统中必须唯一*/
-#define BUFF_LEN 10  /*缓冲区可以存放10个产品*/
+#define BUFF_LEN 1  /*缓冲区可以存放10个产品*/
 #define PRODUCT_LEN 32 /*每个产品是一个字符串:<=32字符*/
 
 /*下面的P,V是对系统调用的简单封装*/
@@ -56,18 +56,17 @@ main()
   unsigned char out;/*消费者取出产品的指针:它的值存放在全局缓冲区第二个字节*/
   char product[33];/*它的数据从缓冲区中取*/
   int shmid;/*共享存储区id*/
-  int semid_producer, semid_consumer, semid_mutex;/*信号量集合id*/
+  int semid_apple, semid_orange, semid_mutex;/*信号量集合id*/
     
   shmid = shmget(SHMKEY, BUFF_LEN * PRODUCT_LEN+2, 0777);/*连接共享存储区:2 存放in,out的值*/
   p_buffer = (char*)shmat(shmid, 0, 0);/*取共享存储区地址*/
 
   semid_mutex = semget(SEMKEY_MUTEX,1, 0777);/*获取全局信号量id*/
-  semid_producer = semget(SEMKEY_PRODUCER,1, 0777);
-  semid_consumer = semget(SEMKEY_CONSUMER,1, 0777); 
+  semid_apple = semget(SEMKEY_APPLE,1, 0777);
+  semid_orange = semget(SEMKEY_ORANGE,1, 0777); 
 
   /*进入临界区*/
-  P(semid_consumer);/*对私有信号量作P操作*/
-  P(semid_mutex);/*对公有信号量作P操作*//*二者顺序不能换*/
+  P(semid_orange);/*对私有信号量作P操作*/
   
   p_buffer++;
   out = (unsigned char)(*p_buffer);
@@ -76,9 +75,8 @@ main()
   *p_buffer = (char)out;
   p_buffer--;
   shmdt(p_buffer); /*离开缓冲区*/
-  
+  printf("daughter eat orange \n");
    /*离开临界区*/
-  V(semid_producer);
   V(semid_mutex);   
 
   /*消费产品:在屏幕上输出*/

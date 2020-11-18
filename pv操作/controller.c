@@ -4,11 +4,12 @@
 #include <sys/sem.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h>
 #define SHMKEY 9075 /*共享存储区的键*/
 #define SEMKEY_APPLE 9085 
 #define SEMKEY_ORANGE 9086 
 #define SEMKEY_MUTEX 9087 /*信号量数组的键*//*注意:上面的键在系统中必须唯一*/
-#define BUFF_LEN 10  /*缓冲区可以存放10个产品*/
+#define BUFF_LEN 1  /*缓冲区可以存放10个产品*/
 #define PRODUCT_LEN 32 /*每个产品是一个字符串:<=32字符*/
 
 void set_sembuf_struct(struct sembuf *sem,int semnum, int semop,int semflg) 
@@ -72,7 +73,7 @@ main()
     return -1; 
   } 
   
-  if((semid_orange = semget(SEMKEY_orange,1, 0777|IPC_CREAT|IPC_EXCL))==-1) 
+  if((semid_orange = semget(SEMKEY_ORANGE,1, 0777|IPC_CREAT|IPC_EXCL))==-1) 
   { 
     if (errno == EEXIST)
       printf("The SEMKEY_orange Has Existed!\n");

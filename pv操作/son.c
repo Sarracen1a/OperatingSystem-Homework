@@ -4,13 +4,8 @@ son
 P（苹果）
 吃苹果
 V(盘子)
-#define SEMKEY_APPLE 9085 
-#define SEMKEY_ORANGE 9086 
-
-
-#define SEMKEY_APPLE 9085 
-#define SEMKEY_ORANGE 9086 
 */
+
 /*消费者-儿子:son.c*/
 #include <sys/types.h>
 #include <sys/ipc.h>
@@ -18,11 +13,12 @@ V(盘子)
 #include <sys/sem.h>
 #include <errno.h>
 #include <string.h>
+#include <stdio.h>
 #define SHMKEY 9075 /*共享存储区的键*/
 #define SEMKEY_APPLE 9085 
 #define SEMKEY_ORANGE 9086 
 #define SEMKEY_MUTEX 9087 /*信号量数组的键*//*注意:上面的键在系统中必须唯一*/
-#define BUFF_LEN 10  /*缓冲区可以存放10个产品*/
+#define BUFF_LEN 1  /*缓冲区可以存放10个产品*/
 #define PRODUCT_LEN 32 /*每个产品是一个字符串:<=32字符*/
 
 /*下面的P,V是对系统调用的简单封装*/
@@ -73,8 +69,7 @@ main()
   semid_orange = semget(SEMKEY_ORANGE,1, 0777); 
 
   /*进入临界区*/
-  P(semid_orange);/*对私有信号量作P操作*/
-  P(semid_mutex);/*对公有信号量作P操作*//*二者顺序不能换*/
+  P(semid_apple);/*对私有信号量作P操作*/
   
   p_buffer++;
   out = (unsigned char)(*p_buffer);
@@ -85,10 +80,10 @@ main()
   shmdt(p_buffer); /*离开缓冲区*/
   
    /*离开临界区*/
-  V(semid_apple);
   V(semid_mutex);   
 
   /*消费产品:在屏幕上输出*/
-  printf("Consume a  Product:\n");
+  printf("Consume a  Fruit:\n");
   printf("====:%s\n", product);
 }
+
